@@ -82,6 +82,8 @@ class MusicPlayerGUI:
         controls_menu.add_command(label="Stop", command=self.stop_music)
         controls_menu.add_command(label="Next Track", command=self.next_track)
         controls_menu.add_command(label="Previous Track", command=self.prev_track)
+        controls_menu.add_command(label="Rewind", command=self.rewind)
+        controls_menu.add_command(label="Fast Forward", command=self.fast_forward)
         menubar.add_cascade(label="Controls", menu=controls_menu)
 
         # Options Menu
@@ -186,6 +188,14 @@ class MusicPlayerGUI:
         )
         prev_btn.grid(row=0, column=1, padx=6)
 
+        rewind_btn = tk.Button(
+            controls_frame, text="⏪", font=("Segoe UI Emoji", 14),
+            bg=self.colors["btn_bg"], fg=self.colors["btn_fg"],
+            activebackground=self.colors["border"], activeforeground=self.colors["text"],
+            bd=0, padx=12, pady=6, cursor="hand2", command=self.rewind
+        )
+        rewind_btn.grid(row=0, column=2, padx=6)
+
         self.play_btn = tk.Button(
             controls_frame,
             image=self.play_img if isinstance(self.play_img, tk.PhotoImage) else None,
@@ -194,7 +204,7 @@ class MusicPlayerGUI:
             activebackground=self.colors["accent_hover"], bd=0, padx=14, pady=6, cursor="hand2",
             command=self.toggle_play_pause
         )
-        self.play_btn.grid(row=0, column=2, padx=8)
+        self.play_btn.grid(row=0, column=3, padx=8)
 
         stop_btn = tk.Button(
             controls_frame,
@@ -204,7 +214,15 @@ class MusicPlayerGUI:
             activebackground=self.colors["border"], activeforeground=self.colors["text"],
             bd=0, padx=10, pady=6, cursor="hand2", command=self.stop_music
         )
-        stop_btn.grid(row=0, column=3, padx=6)
+        stop_btn.grid(row=0, column=4, padx=6)
+
+        fast_forward_btn = tk.Button(
+            controls_frame, text="⏩", font=("Segoe UI Emoji", 14),
+            bg=self.colors["btn_bg"], fg=self.colors["btn_fg"],
+            activebackground=self.colors["border"], activeforeground=self.colors["text"],
+            bd=0, padx=12, pady=6, cursor="hand2", command=self.fast_forward
+        )
+        fast_forward_btn.grid(row=0, column=5, padx=6)
 
         next_btn = tk.Button(
             controls_frame, text="⏭", font=("Segoe UI Emoji", 14),
@@ -212,7 +230,7 @@ class MusicPlayerGUI:
             activebackground=self.colors["border"], activeforeground=self.colors["text"],
             bd=0, padx=12, pady=6, cursor="hand2", command=self.next_track
         )
-        next_btn.grid(row=0, column=4, padx=6)
+        next_btn.grid(row=0, column=6, padx=6)
 
         self.repeat_btn = tk.Button(
             controls_frame, text="🔁", font=("Segoe UI Emoji", 12),
@@ -220,7 +238,7 @@ class MusicPlayerGUI:
             activebackground=self.colors["border"], activeforeground=self.colors["text"],
             bd=0, padx=8, pady=6, cursor="hand2", command=self.cycle_repeat
         )
-        self.repeat_btn.grid(row=0, column=5, padx=6)
+        self.repeat_btn.grid(row=0, column=7, padx=6)
 
         # Volume & Mute Bar
         volume_frame = tk.Frame(left_panel, bg=self.colors["bg"])
@@ -390,6 +408,18 @@ class MusicPlayerGUI:
         prev_idx = self.playlist.get_prev_index(elapsed)
         if prev_idx is not None:
             self.play_track(prev_idx)
+
+    def rewind(self):
+        if not self.player.is_stopped and self.player.track_length > 0:
+            elapsed = self.player.get_elapsed_seconds()
+            new_time = max(0.0, elapsed - 10.0)
+            self.player.seek(new_time)
+
+    def fast_forward(self):
+        if not self.player.is_stopped and self.player.track_length > 0:
+            elapsed = self.player.get_elapsed_seconds()
+            new_time = min(self.player.track_length, elapsed + 10.0)
+            self.player.seek(new_time)
 
     # --- Seek Drag/Release & Updates ---
 
