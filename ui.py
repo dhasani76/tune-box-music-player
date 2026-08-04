@@ -16,7 +16,7 @@ class MusicPlayerGUI:
         self.playlist = playlist
 
         self.root.title("Tune Box")
-        self.root.geometry("780x540")
+        self.root.geometry("820x540")
         self.root.minsize(700, 480)
 
         self.is_seeking: bool = False  # Flag to prevent slider feedback loops during dragging
